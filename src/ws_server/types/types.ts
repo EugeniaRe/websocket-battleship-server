@@ -1,6 +1,11 @@
 export interface BaseMessage {
   type: string;
-  data: RegistrationData;
+  data:
+    | RegistrationData
+    | string
+    | AddUserToRoomData
+    | Array<UpdateRoomData>
+    | CreateGameData;
 }
 
 export interface RegistrationMessage {
@@ -9,6 +14,7 @@ export interface RegistrationMessage {
     name: string;
     password: string;
   };
+  id: 0;
 }
 
 export interface RegistrationData {
@@ -24,6 +30,7 @@ export interface RegistrationResponse {
     error: boolean;
     errorText: string;
   };
+  id: 0;
 }
 
 export interface RegistrationResponseData {
@@ -31,4 +38,54 @@ export interface RegistrationResponseData {
   index: number;
   error: boolean;
   errorText: string;
+}
+
+export interface CreateRoomMessage extends BaseMessage {
+  type: "create_room";
+  data: string;
+}
+
+export interface AddUserToRoomMessage extends BaseMessage {
+  type: "add_user_to_room";
+  data: {
+    indexRoom: number;
+  };
+}
+
+export interface AddUserToRoomData {
+  indexRoom: number;
+}
+
+export interface UpdateRoomMessage extends BaseMessage {
+  type: "update_room";
+  data: Array<{
+    roomId: number;
+    roomUsers: Array<{
+      name: string;
+      index: number;
+    }>;
+  }>;
+  id: 0;
+}
+
+export interface UpdateRoomData {
+  roomId: number;
+  roomUsers: Array<{
+    name: string;
+    index: number;
+  }>;
+}
+
+export interface CreateGameMessage extends BaseMessage {
+  type: "create_game";
+  data: {
+    idGame: number;
+    idPlayer: number;
+  };
+  id: 0;
+}
+
+export interface CreateGameData {
+  idGame: number;
+  idPlayer: number;
 }

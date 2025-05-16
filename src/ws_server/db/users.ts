@@ -35,3 +35,29 @@ export const addUser = (
   users.push(newUser);
   return newUser;
 };
+
+export const getUserById = (id: number): User | undefined => {
+  return users.find((u) => u.index === id);
+};
+
+export const getUserByName = (name: string): User | undefined => {
+  return users.find((u) => u.name === name);
+};
+
+export const getAllUsers = (): User[] => {
+  return [...users];
+};
+
+export const updateUserWins = (userId: number): void => {
+  const user = getUserById(userId);
+  if (user) {
+    user.wins++;
+  }
+};
+
+export const removeUserWs = (ws: WebSocket): void => {
+  const user = users.find((u) => u.ws === ws);
+  if (user) {
+    user.ws = undefined;
+  }
+};
