@@ -1,3 +1,9 @@
+export interface IMessage {
+  type: string;
+  data: string;
+  id: 0;
+}
+
 export interface BaseMessage {
   type: string;
   data:

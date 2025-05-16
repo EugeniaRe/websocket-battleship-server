@@ -5,26 +5,30 @@ import { getAllUsers, getUserById } from "../db/users";
 import { WebSocket } from "ws";
 import {
   AddUserToRoomMessage,
+  CreateGameMessage,
   CreateRoomMessage,
   UpdateRoomMessage,
 } from "../types/types";
+import { Player } from "../game/Player";
+import { createGame } from "../db/games";
 
 export const handleCreateRoom = (
   ws: WebSocket,
   message: CreateRoomMessage
 ): void => {
+  // console.log(message);
   const user = getUserById(message.data as unknown as number);
-  console.log(user);
-  if (!user || !user.ws) {
-    return;
-  }
+  // console.log(user);
+  // if (!user || !user.ws) {
+  //   return;
+  // }
 
-  const room = createRoom({
-    name: user.name,
-    index: user.index,
-  });
+  // const room = createRoom({
+  //   name: user.name,
+  //   index: user.index,
+  // });
 
-  // broadcastRooms();
+  broadcastRooms();
 };
 
 export const handleAddUserToRoom = (
@@ -37,6 +41,8 @@ export const handleAddUserToRoom = (
     return;
   }
 
+  console.log(message);
+
   const room = addUserToRoom(indexRoom, {
     name: user.name,
     index: user.index,
@@ -46,34 +52,34 @@ export const handleAddUserToRoom = (
     removeRoom(room.roomId);
     broadcastRooms();
 
-    // // Create game
-    // const player1 = new Player(room.roomUsers[0].index, room.roomUsers[0].name);
-    // const player2 = new Player(room.roomUsers[1].index, room.roomUsers[1].name);
-    // const gameId = createGame([player1, player2]);
+    const player1 = new Player(room.roomUsers[0].index, room.roomUsers[0].name);
+    const player2 = new Player(room.roomUsers[1].index, room.roomUsers[1].name);
 
-    // const response1: CreateGameMessage = {
-    //   type: "create_game",
-    //   data: {
-    //     idGame: gameId,
-    //     idPlayer: player1.index,
-    //   },
-    //   id: 0,
-    // };
+    const gameId = createGame([player1, player2]);
 
-    // const response2: CreateGameMessage = {
-    //   type: "create_game",
-    //   data: {
-    //     idGame: gameId,
-    //     idPlayer: player2.index,
-    //   },
-    //   id: 0,
-    // };
+    const response1: CreateGameMessage = {
+      type: "create_game",
+      data: {
+        idGame: gameId,
+        idPlayer: player1.index,
+      },
+      id: 0,
+    };
 
-    // const user1 = getUserById(player1.index);
-    // const user2 = getUserById(player2.index);
+    const response2: CreateGameMessage = {
+      type: "create_game",
+      data: {
+        idGame: gameId,
+        idPlayer: player2.index,
+      },
+      id: 0,
+    };
 
-    // user1?.ws?.send(JSON.stringify(response1));
-    // user2?.ws?.send(JSON.stringify(response2));
+    const user1 = getUserById(player1.index);
+    const user2 = getUserById(player2.index);
+
+    user1?.ws?.send(JSON.stringify(response1));
+    user2?.ws?.send(JSON.stringify(response2));
   }
 };
 

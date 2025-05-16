@@ -1,15 +1,11 @@
 import { WebSocket } from "ws";
-import { RegistrationMessage } from "../types/types";
+import { IMessage, RegistrationMessage } from "../types/types";
 import { addUser } from "../db/users";
 
-export const handleRegistration = (
-  ws: WebSocket,
-  message: RegistrationMessage
-): void => {
+export const handleRegistration = (ws: WebSocket, message: IMessage): void => {
+  const { name, password } = JSON.parse(message.data);
   try {
-    const { name, password } = message.data;
     const user = addUser(name, password, ws);
-
     const response = {
       type: "reg",
       data: JSON.stringify({
@@ -20,13 +16,13 @@ export const handleRegistration = (
       }),
       id: 0,
     };
-
+    console.log(response);
     ws.send(JSON.stringify(response));
   } catch (error) {
     const response = {
       type: "reg",
       data: {
-        name: message.data.name,
+        name,
         index: -1,
         error: true,
         errorText: (error as Error).message,
