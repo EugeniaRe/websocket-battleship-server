@@ -2,13 +2,14 @@ import { WebSocket } from "ws";
 import {
   BaseMessage,
   CreateRoomMessage,
+  CustomWebSocket,
   RegistrationMessage,
 } from "../types/types";
 import { handleRegistration } from "./auth";
-import { handleCreateRoom } from "./room";
+import { handleAddUserToRoom, handleCreateRoom } from "./room";
 import { getRooms } from "../db/rooms";
 
-const clients = new Map<number | string, WebSocket>();
+const clients = new Map<number | string, CustomWebSocket>();
 
 function broadcast(message: any) {
   clients.forEach((client) => {
@@ -20,7 +21,6 @@ function broadcast(message: any) {
 
 export const sendUpdateRoom = () => {
   const availableRooms = getRooms();
-  console.log("availableRooms", availableRooms);
   const updateRoomMessage = {
     type: "update_room",
     data: JSON.stringify(availableRooms),
@@ -28,19 +28,20 @@ export const sendUpdateRoom = () => {
   };
   broadcast(updateRoomMessage);
 };
-export const handleMessage = (ws: WebSocket, message: BaseMessage): void => {
-  let currentUser = null;
+export const handleMessage = (
+  ws: CustomWebSocket,
+  message: BaseMessage
+): void => {
   try {
     switch (message.type) {
       case "reg":
         handleRegistration(ws, message, clients);
         break;
       case "create_room":
-        handleCreateRoom(ws, message as CreateRoomMessage);
+        handleCreateRoom(ws, message);
         break;
       case "add_user_to_room":
-        // handleAddUserToRoom(ws, message as any);
-        console.log("add_user_to_room");
+        handleAddUserToRoom(ws, message);
         break;
       default:
         console.log("Unknown message type:", message.type);

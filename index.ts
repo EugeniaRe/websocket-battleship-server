@@ -1,7 +1,8 @@
-import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer } from "ws";
 import { IncomingMessage } from "http";
 import { httpServer } from "./src/http_server/index";
 import { handleMessage } from "./src/ws_server/handlers/handlers";
+import { CustomWebSocket } from "./src/ws_server/types/types";
 
 const HTTP_PORT = 8181;
 
@@ -13,8 +14,10 @@ const wss = new WebSocketServer({ port: PORT });
 
 console.log(`WebSocket server started on ws://localhost:${PORT}`);
 
-wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+wss.on("connection", (ws: CustomWebSocket, req: IncomingMessage) => {
   console.log("New client connected");
+
+  ws.userId = 0;
 
   ws.on("message", (message: string) => {
     try {

@@ -1,3 +1,5 @@
+import { WebSocket } from "ws";
+
 export interface BaseMessage {
   type: string;
   data: string;
@@ -94,4 +96,8 @@ export interface UpdateRoomData {
 export interface CreateGameData {
   idGame: number;
   idPlayer: number;
+}
+
+export interface CustomWebSocket extends WebSocket {
+  userId: number;
 }

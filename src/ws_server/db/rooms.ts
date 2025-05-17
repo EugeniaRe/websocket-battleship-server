@@ -31,33 +31,33 @@ export function createRoom(): Room {
   return room;
 }
 
-// export const addUserToRoom = (
-//   roomId: number,
-//   user: { name: string; index: number }
-// ): Room | undefined => {
-//   const room = rooms.find((r) => r.roomId === roomId);
-//   if (room && room.roomUsers.length < 2) {
-//     room.roomUsers.push(user);
-//     return room;
-//   }
-//   return undefined;
-// };
-
-export function addUserToRoom(
-  roomId: number | string,
-  playerIndex: number | string,
-  playerName: string
-) {
+export const addUserToRoom = (
+  roomId: number,
+  user: { name: string; index: number }
+): Room | undefined => {
   const room = rooms.find((r) => r.roomId === roomId);
   if (room && room.roomUsers.length < 2) {
-    room.roomUsers.push({
-      name: playerName,
-      index: playerIndex,
-    });
+    room.roomUsers.push(user);
     return room;
   }
   return undefined;
-}
+};
+
+// export function addUserToRoom(
+//   roomId: number | string,
+//   playerIndex: number | string,
+//   playerName: string
+// ) {
+//   const room = rooms.find((r) => r.roomId === roomId);
+//   if (room && room.roomUsers.length < 2) {
+//     room.roomUsers.push({
+//       name: playerName,
+//       index: playerIndex,
+//     });
+//     return room;
+//   }
+//   return undefined;
+// }
 
 export const removeRoom = (roomId: number) => {
   const index = rooms.findIndex((r) => r.roomId === roomId);

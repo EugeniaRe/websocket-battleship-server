@@ -1,11 +1,12 @@
 import { WebSocket } from "ws";
+import { CustomWebSocket } from "../types/types";
 
 export interface User {
   name: string;
   password: string;
   index: number;
   wins: number;
-  ws?: WebSocket;
+  ws?: CustomWebSocket;
 }
 
 const users: User[] = [];
@@ -14,7 +15,7 @@ let UserId = 1;
 export const addUser = (
   name: string,
   password: string,
-  ws?: WebSocket
+  ws?: CustomWebSocket
 ): User => {
   const existingUser = users.find((user) => user.name === name);
   if (existingUser) {
@@ -36,7 +37,7 @@ export const addUser = (
   return newUser;
 };
 
-export const getUserById = (id: number): User | undefined => {
+export const getUserById = (id: number | string): User | undefined => {
   return users.find((u) => u.index === id);
 };
 
@@ -55,7 +56,7 @@ export const updateUserWins = (userId: number): void => {
   }
 };
 
-export const removeUserWs = (ws: WebSocket): void => {
+export const removeUserWs = (ws: CustomWebSocket): void => {
   const user = users.find((u) => u.ws === ws);
   if (user) {
     user.ws = undefined;

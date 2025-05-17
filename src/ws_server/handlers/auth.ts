@@ -1,15 +1,17 @@
 import { WebSocket } from "ws";
-import { BaseMessage } from "../types/types";
+import { BaseMessage, CustomWebSocket } from "../types/types";
 import { addUser } from "../db/users";
+import { sendUpdateRoom } from "./handlers";
 
 export const handleRegistration = (
-  ws: WebSocket,
+  ws: CustomWebSocket,
   message: BaseMessage,
-  clients: Map<number | string, WebSocket>
+  clients: Map<number | string, CustomWebSocket>
 ) => {
   const { name, password } = JSON.parse(message.data);
   try {
     const user = addUser(name, password, ws);
+    ws.userId = user.index;
     clients.set(user.index, ws);
     const response = {
       type: "reg",
@@ -22,6 +24,7 @@ export const handleRegistration = (
       id: 0,
     };
     ws.send(JSON.stringify(response));
+    sendUpdateRoom();
   } catch (error) {
     const response = {
       type: "reg",
