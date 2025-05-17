@@ -1,5 +1,5 @@
 // import { Game } from "../game/Game";
-import { Player } from "../game/Player";
+// import { Player } from "../game/Player";
 
 export type ShipType = "small" | "medium" | "large" | "huge";
 export type AttackStatus = "miss" | "shot" | "killed";
@@ -15,14 +15,15 @@ export interface Ship {
   type: ShipType;
 }
 
+interface Player {
+  index: number | string;
+  ships: Ship[];
+  attacks: Position[];
+}
+
 export interface Game {
   gameId: number;
-  players: {
-    [index: string]: {
-      ships: Ship[];
-      attacks: Position[];
-    };
-  };
+  players: Player[];
   currentPlayer: number | string;
 }
 
@@ -34,17 +35,15 @@ export function createGame(
   player2Index: number | string
 ): Game {
   const game: Game = {
-    gameId: nextGameId + 1,
-    players: {
-      [player1Index]: {
+    gameId: nextGameId++,
+    players: [
+      {
+        index: player1Index,
         ships: [],
         attacks: [],
       },
-      [player2Index]: {
-        ships: [],
-        attacks: [],
-      },
-    },
+      { index: player2Index, ships: [], attacks: [] },
+    ],
     currentPlayer: Math.random() > 0.5 ? player1Index : player2Index,
   };
   games.set(game.gameId, game);
@@ -58,6 +57,17 @@ export const getGame = (gameId: number): Game | undefined => {
 export const removeGame = (gameId: number): void => {
   games.delete(gameId);
 };
+
+export function addShips(
+  gameId: number,
+  playerIndex: number,
+  ships: Ship[]
+): void {
+  const game = games.get(gameId);
+  if (game) {
+    game.players.find((p) => p.index === playerIndex)?.ships.push(...ships);
+  }
+}
 
 // export const getPlayerGame = (playerId: number): Game | undefined => {
 //   for (const game of games.values()) {

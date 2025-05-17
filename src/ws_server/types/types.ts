@@ -3,7 +3,7 @@ import { WebSocket } from "ws";
 export interface BaseMessage {
   type: string;
   data: string;
-  id: 0;
+  id: number;
 }
 
 // export interface BaseMessage {

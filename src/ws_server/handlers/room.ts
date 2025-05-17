@@ -3,7 +3,7 @@ import { getAllUsers, getUserById } from "../db/users";
 import { WebSocket } from "ws";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 import { createGame } from "../db/games";
-import { sendUpdateRoom } from "./handlers";
+import { broadcast, sendUpdateRoom } from "./handlers";
 
 export const handleCreateRoom = (ws: WebSocket, message: BaseMessage): void => {
   createRoom();
@@ -12,15 +12,14 @@ export const handleCreateRoom = (ws: WebSocket, message: BaseMessage): void => {
 
 export const handleAddUserToRoom = (
   ws: CustomWebSocket,
-  message: BaseMessage
+  message: BaseMessage,
+  clients: Map<number | string, CustomWebSocket>
 ) => {
   const { indexRoom } = JSON.parse(message.data);
   const user = getUserById(ws.userId);
   if (!user || !user.ws) {
     return;
   }
-
-  console.log(message);
 
   const room = addUserToRoom(indexRoom, {
     name: user.name,
@@ -36,34 +35,51 @@ export const handleAddUserToRoom = (
     // const gameId = createGame([player1, player2]);
     const [player1, player2] = room.roomUsers;
     const game = createGame(player1.index, player2.index);
+    console.log(clients);
 
-    const response1 = {
-      type: "create_game",
-      data: JSON.stringify({
-        idGame: game.gameId,
-        idPlayer: ws.userId,
-      }),
-      id: 0,
-    };
+    // const response1 = {
+    //   type: "create_game",
+    //   data: JSON.stringify({
+    //     idGame: game.gameId,
+    //     idPlayer: ws.userId,
+    //   }),
+    //   id: 0,
+    // };
+
+    clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        const response1 = {
+          type: "create_game",
+          data: JSON.stringify({
+            idGame: game.gameId,
+            idPlayer: client.userId,
+          }),
+          id: 0,
+        };
+        client.send(JSON.stringify(response1));
+      }
+    });
 
     // ws.send(JSON.stringify(response1));
+    // broadcast(response1);
 
-    const response2 = {
-      type: "create_game",
-      data: JSON.stringify({
-        idGame: game.gameId,
-        idPlayer: player2.index,
-      }),
-      id: 0,
-    };
+    // const response2 = {
+    //   type: "create_game",
+    //   data: JSON.stringify({
+    //     idGame: game.gameId,
+    //     idPlayer: player2.index,
+    //   }),
+    //   id: 0,
+    // };
 
-    const user1 = getUserById(player1.index);
-    const user2 = getUserById(player2.index);
+    // const user1 = getUserById(player1.index);
+    // const user2 = getUserById(player2.index);
 
-    console.log(user1, user2);
+    // console.log(response2);
 
-    user1?.ws?.send(JSON.stringify(response1));
-    user2?.ws?.send(JSON.stringify(response2));
+    // user1?.ws?.send(JSON.stringify(response1));
+
+    // user2?.ws?.send(JSON.stringify(response2));
 
     removeRoom(room.roomId);
   }

@@ -8,10 +8,11 @@ import {
 import { handleRegistration } from "./auth";
 import { handleAddUserToRoom, handleCreateRoom } from "./room";
 import { getRooms } from "../db/rooms";
+import { handleAddShips } from "./ships";
 
 const clients = new Map<number | string, CustomWebSocket>();
 
-function broadcast(message: any) {
+export function broadcast(message: BaseMessage) {
   clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(message));
@@ -41,7 +42,10 @@ export const handleMessage = (
         handleCreateRoom(ws, message);
         break;
       case "add_user_to_room":
-        handleAddUserToRoom(ws, message);
+        handleAddUserToRoom(ws, message, clients);
+        break;
+      case "add_ships":
+        handleAddShips(ws, message);
         break;
       default:
         console.log("Unknown message type:", message.type);
