@@ -1,4 +1,4 @@
-import { addShips, getGame } from "../db/games";
+import { getGame } from "../db/games";
 import { getUserById } from "../db/users";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 
@@ -18,10 +18,10 @@ export const handleAddShips = (
   }
 
   try {
-    addShips(gameId, indexPlayer, ships);
+    player.addShips(ships);
 
     if (game.players.every((p) => p.ships.length === 10)) {
-      console.log("Both players have added ships");
+      // console.log("Both players have added ships");
       // Send start game messages to both players
       game.players.forEach((player) => {
         const user = getUserById(player.index);
@@ -32,7 +32,7 @@ export const handleAddShips = (
           data: JSON.stringify({
             ships: player.ships.map((ship) =>
               JSON.stringify({
-                position: ship.position,
+                position: ship.positions[0],
                 direction: ship.direction,
                 length: ship.length,
                 type: ship.type,
@@ -46,20 +46,19 @@ export const handleAddShips = (
         user.ws.send(JSON.stringify(response));
       });
 
-      // Send first turn message
-      //   const turnMessage: TurnMessage = {
-      //     type: "turn",
-      //     data: {
-      //       currentPlayer: game.currentPlayerIndex,
-      //     },
-      //     id: 0,
-      //   };
+      const turnMessage = {
+        type: "turn",
+        data: JSON.stringify({
+          currentPlayer: game.currentPlayerIndex,
+        }),
+        id: 0,
+      };
 
-      //   const turnMessageJson = JSON.stringify(turnMessage);
-      //   game.players.forEach((player) => {
-      //     const user = getUserById(player.index);
-      //     user?.ws?.send(turnMessageJson);
-      //   });
+      const turnMessageJson = JSON.stringify(turnMessage);
+      game.players.forEach((player) => {
+        const user = getUserById(player.index);
+        user?.ws?.send(turnMessageJson);
+      });
     }
   } catch (error) {
     console.error("Error adding ships:", error);

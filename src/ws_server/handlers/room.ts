@@ -22,8 +22,8 @@ export const handleAddUserToRoom = (
   }
 
   const room = addUserToRoom(indexRoom, {
-    name: user.name,
     index: user.index,
+    name: user.name,
   });
 
   // sendUpdateRoom();
@@ -34,8 +34,8 @@ export const handleAddUserToRoom = (
 
     // const gameId = createGame([player1, player2]);
     const [player1, player2] = room.roomUsers;
-    const game = createGame(player1.index, player2.index);
-    console.log(clients);
+    const game = createGame(player1, player2);
+    // console.log(clients);
 
     // const response1 = {
     //   type: "create_game",
@@ -51,7 +51,7 @@ export const handleAddUserToRoom = (
         const response1 = {
           type: "create_game",
           data: JSON.stringify({
-            idGame: game.gameId,
+            idGame: game.id,
             idPlayer: client.userId,
           }),
           id: 0,

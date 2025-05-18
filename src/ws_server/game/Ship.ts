@@ -1,26 +1,31 @@
 export class Ship {
   positions: { x: number; y: number }[];
-  hits: boolean[];
+  direction: boolean;
   length: number;
   type: "small" | "medium" | "large" | "huge";
+  hits: boolean[];
 
   constructor(
-    x: number,
-    y: number,
+    position: { x: number; y: number },
     direction: boolean,
     length: number,
     type: "small" | "medium" | "large" | "huge"
   ) {
     this.length = length;
     this.type = type;
-    this.positions = [];
+    this.direction = direction;
     this.hits = new Array(length).fill(false);
 
-    for (let i = 0; i < length; i++) {
-      this.positions.push({
-        x: direction ? x + i : x,
-        y: direction ? y : y + i,
-      });
+    if (direction) {
+      this.positions = Array.from({ length }, (_, index) => ({
+        x: position.x,
+        y: position.y + index,
+      }));
+    } else {
+      this.positions = Array.from({ length }, (_, index) => ({
+        x: position.x + index,
+        y: position.y,
+      }));
     }
   }
 

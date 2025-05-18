@@ -9,6 +9,7 @@ import { handleRegistration } from "./auth";
 import { handleAddUserToRoom, handleCreateRoom } from "./room";
 import { getRooms } from "../db/rooms";
 import { handleAddShips } from "./ships";
+import { handleAttack, handleRandomAttack } from "./game";
 
 const clients = new Map<number | string, CustomWebSocket>();
 
@@ -46,6 +47,12 @@ export const handleMessage = (
         break;
       case "add_ships":
         handleAddShips(ws, message);
+        break;
+      case "attack":
+        handleAttack(ws, message);
+        break;
+      case "randomAttack":
+        handleRandomAttack(ws, message);
         break;
       default:
         console.log("Unknown message type:", message.type);

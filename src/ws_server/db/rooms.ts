@@ -1,13 +1,9 @@
+import { RoomPlayer } from "../types/types";
 import { User } from "./users";
-
-export interface RoomUser {
-  name: string;
-  index: number | string;
-}
 
 export interface Room {
   roomId: number;
-  roomUsers: RoomUser[];
+  roomUsers: RoomPlayer[];
 }
 
 const rooms: Room[] = [];
@@ -33,7 +29,7 @@ export function createRoom(): Room {
 
 export const addUserToRoom = (
   roomId: number,
-  user: { name: string; index: number }
+  user: RoomPlayer
 ): Room | undefined => {
   const room = rooms.find((r) => r.roomId === roomId);
   if (room && room.roomUsers.length < 2) {

@@ -9,7 +9,8 @@ export class Game {
   constructor(id: number, players: Player[]) {
     this.id = id;
     this.players = players;
-    this.currentPlayerIndex = 0;
+    this.currentPlayerIndex =
+      Math.random() > 0.5 ? players[0].index : players[1].index;
     this.gameOver = false;
   }
 

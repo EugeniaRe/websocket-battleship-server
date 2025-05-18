@@ -101,3 +101,8 @@ export interface CreateGameData {
 export interface CustomWebSocket extends WebSocket {
   userId: number;
 }
+
+export interface RoomPlayer {
+  index: number;
+  name: string;
+}
