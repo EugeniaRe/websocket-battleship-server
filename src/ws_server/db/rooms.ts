@@ -32,7 +32,11 @@ export const addUserToRoom = (
   user: RoomPlayer
 ): Room | undefined => {
   const room = rooms.find((r) => r.roomId === roomId);
-  if (room && room.roomUsers.length < 2) {
+  if (
+    room &&
+    room.roomUsers.length < 2 &&
+    !room.roomUsers.find((u) => u.index === user.index)
+  ) {
     room.roomUsers.push(user);
     return room;
   }
