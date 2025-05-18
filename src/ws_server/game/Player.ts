@@ -6,6 +6,7 @@ export class Player {
   name: string;
   ships: Ship[];
   ws?: WebSocket;
+  filledSells: { x: number; y: number }[] = [];
   // boardSize = 10;
 
   constructor(index: number, name: string, ws?: WebSocket) {
@@ -59,6 +60,7 @@ export class Player {
   // }
 
   receiveAttack(x: number, y: number): { status: "miss" | "shot" | "killed" } {
+    this.filledSells.push({ x, y });
     for (const ship of this.ships) {
       if (ship.isHit(x, y)) {
         const result = ship.recordHit(x, y);

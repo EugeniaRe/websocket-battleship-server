@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 import { addUser } from "../db/users";
 import { sendUpdateRoom } from "./handlers";
+import { sendWinners } from "./game";
 
 export const handleRegistration = (
   ws: CustomWebSocket,
@@ -24,6 +25,7 @@ export const handleRegistration = (
       id: 0,
     };
     ws.send(JSON.stringify(response));
+    sendWinners();
     sendUpdateRoom();
   } catch (error) {
     const response = {

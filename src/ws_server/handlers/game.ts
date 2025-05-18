@@ -1,15 +1,17 @@
 import { getGame, removeGame } from "../db/games";
-import { getUserById, updateUserWins } from "../db/users";
+import { getAllUsers, getUserById, updateUserWins } from "../db/users";
 import { WebSocket } from "ws";
 import { BaseMessage, CustomWebSocket } from "../types/types";
+import { broadcast } from "./handlers";
 
 export const handleAttack = (
   ws: CustomWebSocket,
   message: BaseMessage
 ): void => {
   const { x, y, gameId, indexPlayer } = JSON.parse(message.data);
-  console.log(x, y, gameId, indexPlayer);
   const game = getGame(gameId);
+
+  console.log(game);
   if (!game) {
     return;
   }
@@ -24,6 +26,9 @@ export const handleAttack = (
       throw new Error("Target player not found");
     }
 
+    if (targetPlayer.filledSells.some((sell) => sell.x === x && sell.y === y)) {
+      throw new Error("This sell is already attacked");
+    }
     const result = game.attack(x, y, indexPlayer);
 
     const attackResponse = {
@@ -42,7 +47,6 @@ export const handleAttack = (
       user?.ws?.send(attackResponseJson);
     });
 
-    // Send turn info
     const turnMessage = {
       type: "turn",
       data: JSON.stringify({
@@ -57,19 +61,18 @@ export const handleAttack = (
       user?.ws?.send(turnMessageJson);
     });
 
-    // Check if game is over
     if (game.gameOver) {
       const finishMessage = {
         type: "finish",
-        data: {
+        data: JSON.stringify({
           winPlayer: indexPlayer,
-        },
+        }),
         id: 0,
       };
 
       updateUserWins(indexPlayer);
       // broadcastWinners();
-
+      sendWinners();
       const finishMessageJson = JSON.stringify(finishMessage);
       game.players.forEach((player) => {
         const user = getUserById(player.index);
@@ -84,7 +87,7 @@ export const handleAttack = (
 };
 
 export const handleRandomAttack = (
-  ws: WebSocket,
+  ws: CustomWebSocket,
   message: BaseMessage
 ): void => {
   const { gameId, indexPlayer } = JSON.parse(message.data);
@@ -93,20 +96,37 @@ export const handleRandomAttack = (
     return;
   }
 
-  //   try {
-  //     const { x, y } = game.randomAttack(indexPlayer);
-  //     const attackMessage: AttackMessage = {
-  //       type: "attack",
-  //       data: {
-  //         gameId,
-  //         x,
-  //         y,
-  //         indexPlayer,
-  //       },
-  //       id: 0,
-  //     };
-  //     handleAttack(ws, attackMessage);
-  //   } catch (error) {
-  //     console.error("Random attack error:", error);
-  //   }
+  try {
+    const { x, y } = game.randomAttack(indexPlayer);
+    const attackMessage = {
+      type: "attack",
+      data: JSON.stringify({
+        gameId,
+        x,
+        y,
+        indexPlayer,
+      }),
+      id: 0,
+    };
+    handleAttack(ws, attackMessage);
+  } catch (error) {
+    console.error("Random attack error:", error);
+  }
+};
+
+export const sendWinners = () => {
+  const winnersMessage = {
+    type: "update_winners",
+    data: JSON.stringify(
+      getAllUsers()
+        .filter((user) => user.wins > 0)
+        .map((user) => ({
+          name: user.name,
+          wins: user.wins,
+        }))
+    ),
+    id: 0,
+  };
+
+  broadcast(winnersMessage);
 };

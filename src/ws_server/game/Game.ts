@@ -28,19 +28,22 @@ export class Game {
       throw new Error("Target player not found");
     }
 
+    // if (targetPlayer.filledSells.some((sell) => sell.x === x && sell.y === y)) {
+    //   throw new Error("This sell is already attacked");
+    // }
+
     const result = targetPlayer.receiveAttack(x, y);
 
-    // Check if all ships are sunk
     if (targetPlayer.allShipsSunk()) {
       this.gameOver = true;
       return { status: "killed", nextPlayer: playerIndex };
     }
 
-    // Switch player if miss
     if (result.status === "miss") {
-      this.currentPlayerIndex = this.players.findIndex(
-        (p) => p.index !== playerIndex
-      );
+      this.currentPlayerIndex =
+        this.players.find((p) => p.index !== playerIndex)?.index ??
+        this.currentPlayerIndex;
+
       return { status: "miss", nextPlayer: this.currentPlayerIndex };
     }
 
@@ -52,11 +55,18 @@ export class Game {
     if (!targetPlayer) {
       throw new Error("Target player not found");
     }
+    do {
+      const x = Math.floor(Math.random() * 10);
+      const y = Math.floor(Math.random() * 10);
+      if (
+        !targetPlayer.filledSells.some((sell) => sell.x === x && sell.y === y)
+      ) {
+        return { x, y };
+      }
+    } while (true);
+    // const x = Math.floor(Math.random() * 10);
+    // const y = Math.floor(Math.random() * 10);
 
-    // Simple random attack - in a real game, you'd want to track previous attacks
-    const x = Math.floor(Math.random() * 10);
-    const y = Math.floor(Math.random() * 10);
-
-    return { x, y };
+    // return { x, y };
   }
 }
