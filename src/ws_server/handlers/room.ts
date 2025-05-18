@@ -40,7 +40,12 @@ export const handleAddUserToRoom = (
           }),
           id: 0,
         };
-        client.send(JSON.stringify(response1));
+        if (
+          client.userId === player1.index ||
+          client.userId === player2.index
+        ) {
+          client.send(JSON.stringify(response1));
+        }
       }
     });
     removeRoom(room.roomId);
