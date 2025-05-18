@@ -1,13 +1,9 @@
 import { getGame, removeGame } from "../db/games";
 import { getAllUsers, getUserById, updateUserWins } from "../db/users";
-import { WebSocket } from "ws";
-import { BaseMessage, CustomWebSocket } from "../types/types";
+import { BaseMessage } from "../types/types";
 import { broadcast } from "./handlers";
 
-export const handleAttack = (
-  ws: CustomWebSocket,
-  message: BaseMessage
-): void => {
+export const handleAttack = (message: BaseMessage) => {
   const { x, y, gameId, indexPlayer } = JSON.parse(message.data);
   const game = getGame(gameId);
 
@@ -71,7 +67,6 @@ export const handleAttack = (
       };
 
       updateUserWins(indexPlayer);
-      // broadcastWinners();
       sendWinners();
       const finishMessageJson = JSON.stringify(finishMessage);
       game.players.forEach((player) => {
@@ -86,10 +81,7 @@ export const handleAttack = (
   }
 };
 
-export const handleRandomAttack = (
-  ws: CustomWebSocket,
-  message: BaseMessage
-): void => {
+export const handleRandomAttack = (message: BaseMessage): void => {
   const { gameId, indexPlayer } = JSON.parse(message.data);
   const game = getGame(gameId);
   if (!game) {
@@ -108,7 +100,7 @@ export const handleRandomAttack = (
       }),
       id: 0,
     };
-    handleAttack(ws, attackMessage);
+    handleAttack(attackMessage);
   } catch (error) {
     console.error("Random attack error:", error);
   }

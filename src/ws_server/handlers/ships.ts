@@ -2,10 +2,7 @@ import { getGame } from "../db/games";
 import { getUserById } from "../db/users";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 
-export const handleAddShips = (
-  ws: CustomWebSocket,
-  message: BaseMessage
-): void => {
+export const handleAddShips = (ws: CustomWebSocket, message: BaseMessage) => {
   const { gameId, ships, indexPlayer } = JSON.parse(message.data);
   const game = getGame(gameId);
   if (!game) {
@@ -21,8 +18,6 @@ export const handleAddShips = (
     player.addShips(ships);
 
     if (game.players.every((p) => p.ships.length === 10)) {
-      // console.log("Both players have added ships");
-      // Send start game messages to both players
       game.players.forEach((player) => {
         const user = getUserById(player.index);
         if (!user?.ws) return;

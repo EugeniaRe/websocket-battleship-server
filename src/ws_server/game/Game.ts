@@ -28,10 +28,6 @@ export class Game {
       throw new Error("Target player not found");
     }
 
-    // if (targetPlayer.filledSells.some((sell) => sell.x === x && sell.y === y)) {
-    //   throw new Error("This sell is already attacked");
-    // }
-
     const result = targetPlayer.receiveAttack(x, y);
 
     if (targetPlayer.allShipsSunk()) {
@@ -64,9 +60,5 @@ export class Game {
         return { x, y };
       }
     } while (true);
-    // const x = Math.floor(Math.random() * 10);
-    // const y = Math.floor(Math.random() * 10);
-
-    // return { x, y };
   }
 }

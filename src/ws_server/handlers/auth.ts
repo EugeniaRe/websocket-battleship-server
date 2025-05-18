@@ -1,4 +1,3 @@
-import { WebSocket } from "ws";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 import { addUser } from "../db/users";
 import { sendUpdateRoom } from "./handlers";

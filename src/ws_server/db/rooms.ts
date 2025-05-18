@@ -1,5 +1,4 @@
 import { RoomPlayer } from "../types/types";
-import { User } from "./users";
 
 export interface Room {
   roomId: number;
@@ -8,15 +7,6 @@ export interface Room {
 
 const rooms: Room[] = [];
 let newRoomId = 1;
-
-// export const createRoom = (user: { name: string; index: number }): Room => {
-//   const newRoom: Room = {
-//     roomId: newRoomId++,
-//     roomUsers: [user],
-//   };
-//   rooms.push(newRoom);
-//   return newRoom;
-// };
 
 export function createRoom(): Room {
   const room: Room = {
@@ -42,22 +32,6 @@ export const addUserToRoom = (
   }
   return undefined;
 };
-
-// export function addUserToRoom(
-//   roomId: number | string,
-//   playerIndex: number | string,
-//   playerName: string
-// ) {
-//   const room = rooms.find((r) => r.roomId === roomId);
-//   if (room && room.roomUsers.length < 2) {
-//     room.roomUsers.push({
-//       name: playerName,
-//       index: playerIndex,
-//     });
-//     return room;
-//   }
-//   return undefined;
-// }
 
 export const removeRoom = (roomId: number) => {
   const index = rooms.findIndex((r) => r.roomId === roomId);

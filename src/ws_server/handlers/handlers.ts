@@ -1,10 +1,5 @@
 import { WebSocket } from "ws";
-import {
-  BaseMessage,
-  CreateRoomMessage,
-  CustomWebSocket,
-  RegistrationMessage,
-} from "../types/types";
+import { BaseMessage, CustomWebSocket } from "../types/types";
 import { handleRegistration } from "./auth";
 import { handleAddUserToRoom, handleCreateRoom } from "./room";
 import { getRooms } from "../db/rooms";
@@ -49,10 +44,10 @@ export const handleMessage = (
         handleAddShips(ws, message);
         break;
       case "attack":
-        handleAttack(ws, message);
+        handleAttack(message);
         break;
       case "randomAttack":
-        handleRandomAttack(ws, message);
+        handleRandomAttack(message);
         break;
       default:
         console.log("Unknown message type:", message.type);
