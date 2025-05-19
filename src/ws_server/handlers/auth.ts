@@ -29,12 +29,12 @@ export const handleRegistration = (
   } catch (error) {
     const response = {
       type: "reg",
-      data: {
+      data: JSON.stringify({
         name,
         index: -1,
         error: true,
         errorText: (error as Error).message,
-      },
+      }),
       id: 0,
     };
     ws.send(JSON.stringify(response));
