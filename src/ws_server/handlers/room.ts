@@ -3,7 +3,7 @@ import { getUserById } from "../db/users";
 import { WebSocket } from "ws";
 import { BaseMessage, CustomWebSocket } from "../types/types";
 import { createGame } from "../db/games";
-import { broadcast, sendUpdateRoom } from "./handlers";
+import { sendUpdateRoom } from "./handlers";
 
 export const handleCreateRoom = (ws: WebSocket, message: BaseMessage): void => {
   createRoom();
